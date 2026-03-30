@@ -24,7 +24,7 @@ Pick what fits the stack (not all are needed):
 
 ## Template
 
-```markdown
+~~~markdown
 # {Topic}
 
 ## Rule
@@ -46,4 +46,4 @@ Pick what fits the stack (not all are needed):
 
 ## Exceptions
 {When the rule doesn't apply, if any}
-```
+~~~

@@ -2,7 +2,7 @@
 
 ~100 lines. Index, not encyclopedia. They killed the 800-line version because agents couldn't find what they needed.
 
-```markdown
+~~~markdown
 # {Project Name} — Agent Orientation Map
 
 > {One-line description}
@@ -59,4 +59,4 @@ docs/
 - MUST NOT: {prohibition with pointer to LAYERS.md}
 - PREFER: {soft preference}
 - VERIFY: {verification command before PR}
-```
+~~~
