@@ -74,6 +74,8 @@ build:
   only: [main]
 ~~~
 
+**Note:** Add a `typecheck` stage if applicable (e.g., `mypy` for Python, `tsc --noEmit` for TypeScript).
+
 ## Makefile Fallback (no CI platform)
 
 If the repo doesn't use GitHub/GitLab, provide a Makefile so `make ci` runs all checks locally:

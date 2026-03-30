@@ -6,11 +6,11 @@ Harness-init delegates work by **intent**, not by specific tool calls. Map each 
 
 | Intent | Model Tier | Claude Code + OMC | Claude Code (native) | Codex | Cursor |
 |--------|-----------|-------------------|---------------------|-------|--------|
-| **Explore** | Lightweight | `Agent(subagent_type="oh-my-claudecode:explore", model="haiku")` | `Agent(subagent_type="Explore")` | Inline (use file search) | Inline (use @codebase) |
-| **Architect** | Heavyweight | `Agent(subagent_type="oh-my-claudecode:architect", model="opus")` | `Agent(subagent_type="Plan")` | Inline (analyze manually) | Inline (analyze manually) |
+| **Explore** | Lightweight | `Agent(subagent_type="oh-my-claudecode:explore", model="haiku")` | `Agent(subagent_type="Explore")` | `codex exec "explore ..."` or inline file search | Inline (use @codebase) |
+| **Architect** | Heavyweight | `Agent(subagent_type="oh-my-claudecode:architect", model="opus")` | `Agent(subagent_type="Plan")` | `codex exec "analyze ..."` or inline | Inline (analyze in chat) |
 | **Write** | Lightweight | `Agent(subagent_type="oh-my-claudecode:writer", model="haiku")` | `Agent(model="haiku")` | Inline (write directly) | Inline (write directly) |
-| **Execute** | Standard | `Agent(subagent_type="oh-my-claudecode:executor", model="sonnet")` | `Agent(model="sonnet")` | Inline (execute directly) | Inline (execute directly) |
-| **Verify** | Standard | `Agent(subagent_type="oh-my-claudecode:verifier", model="sonnet")` | `Agent(model="sonnet")` | Inline (verify directly) | Inline (verify directly) |
+| **Execute** | Standard | `Agent(subagent_type="oh-my-claudecode:executor", model="sonnet")` | `Agent(model="sonnet")` | `codex exec "implement ..."` | Inline (execute directly) |
+| **Verify** | Standard | `Agent(subagent_type="oh-my-claudecode:verifier", model="sonnet")` | `Agent(model="sonnet")` | `codex exec "verify ..."` | Inline (verify directly) |
 
 ## Model Tiers
 

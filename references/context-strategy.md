@@ -18,7 +18,7 @@
 | Work progress | `git status` + `git log --oneline -10` | What's in flight, where we stopped |
 | Code health | LSP diagnostics / linter output | Issues to address first |
 | CI status | `gh run list --limit 3` (if available) | Is main branch healthy? |
-| Unfinished tasks | `.omc/state/` or project task tracker | Resume from last session |
+| Unfinished tasks | Session state directory or project task tracker | Resume from last session |
 | Architecture compliance | Run boundary test (if exists) | New layer violations? |
 | Documentation drift | Compare docs/ timestamps to src/ | Stale documentation? |
 

@@ -9,7 +9,7 @@ Use these tables to select the right tooling for the detected stack. Phase 0 dis
 | JS/TS | `import ... from '...'` | Regex or AST (ts-morph, babel) | `tests/architecture/boundary.test.ts` |
 | Python | `import ...` / `from ... import` | AST (stdlib `ast` module) | `tests/architecture/test_boundary.py` |
 | Go | `import "..."` | `go/parser` stdlib or regex | `tests/architecture/boundary_test.go` |
-| Rust | `use ...` / `mod ...` | Regex (no easy AST tool) | `tests/architecture/boundary_test.rs` |
+| Rust | `use ...` / `mod ...` | Regex or `syn` crate (heavier) | `tests/architecture/boundary_test.rs` |
 | Java/Kotlin | `import ...` | Regex or ArchUnit | `tests/architecture/BoundaryTest.java` |
 
 **Error format (all stacks):**

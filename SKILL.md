@@ -135,12 +135,6 @@ Agent: Runs Phase 0 -> discovers 200+ existing import violations -> establishes 
 Why good: Doesn't break existing build, uses ratchet for gradual convergence.
 </Good>
 
-<Bad>
-User: "harness-init"
-Agent: Immediately creates AGENTS.md with React/TypeScript template without reading the repo.
-Why bad: Skipped Phase 0 discovery. Assumed stack instead of detecting it.
-</Bad>
-
 <Good>
 User: "harness-init 3-4"
 Agent: Runs Phase 0 (always) -> detects Go + golangci-lint -> reads stack-routing.md -> creates boundary test with `go/parser` + depguard config -> skips Phases 1-2, 5-7.
@@ -152,6 +146,12 @@ User: "harness-init this turborepo monorepo"
 Agent: Runs Phase 0 -> detects packages/ structure -> reads layer-templates.md monorepo model -> maps cross-package dependencies -> creates per-package boundary tests + shared CI matrix.
 Why good: Adapts to monorepo structure instead of forcing single-app patterns.
 </Good>
+
+<Bad>
+User: "harness-init"
+Agent: Immediately creates AGENTS.md with React/TypeScript template without reading the repo.
+Why bad: Skipped Phase 0 discovery. Assumed stack instead of detecting it.
+</Bad>
 
 <Bad>
 User: "make this agent-ready" (repo has 500 lint violations)
