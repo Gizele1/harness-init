@@ -1,6 +1,6 @@
 ---
 name: harness-init
-description: Use when initializing a new project, making a repo agent-ready, or adding architectural layer boundaries — before any feature work begins
+description: Use when initializing a new project, making a repo agent-ready, or adding architectural layer boundaries — produces AGENTS.md, docs/ system of record, boundary tests, linter rules, CI pipeline, and GC scripts
 triggers:
   - harness
   - harness-init
@@ -35,10 +35,10 @@ AI agents can only work with what they can see. Without structured documentation
 
 <Do_Not_Use_When>
 - Repo already has AGENTS.md + docs/architecture/LAYERS.md + boundary tests — use existing harness
-- User wants hierarchical AGENTS.md per directory — use `deepinit` instead
+- User wants hierarchical AGENTS.md per directory — use a per-directory init tool instead
 - User wants runtime observability / agent review loops — out of scope for this skill
-- Quick bug fix or small feature — just delegate to executor
-- User wants to explore or brainstorm — use `brainstorming` skill
+- Quick bug fix or small feature — just do the work directly
+- User wants to explore ideas or brainstorm — this skill is for structured scaffolding, not ideation
 </Do_Not_Use_When>
 
 <Principles>
@@ -52,13 +52,16 @@ AI agents can only work with what they can see. Without structured documentation
 
 <Execution_Policy>
 - Phase 0 (Discovery) is MANDATORY — never skip, never assume the stack
-- Ask the user before starting: "Full setup (all phases) or specific phases?"
+- **Argument parsing:** `full` = all phases (default). `N` = single phase. `N-M` = phase range. No argument = ask user. Phase 0 always runs regardless of argument.
 - Read before you write — match existing code style and patterns
 - Use `git mv` for doc restructuring to preserve history
 - New lint rules warn first if pre-existing violations exist — don't break the build
 - Delegate phases in parallel where independent (e.g., Phase 5 CI + Phase 7 hooks)
 - Run long operations (npm install, test suites) in background
 - Use a feature branch (`feat/harness-engineering`) if the repo has existing work
+- **Phase checkpoints:** After each phase, verify output exists (file created + test/lint passes where applicable). Log completed phases so work can resume if interrupted.
+- **Failure handling:** If a phase fails, skip it, report what failed and why, and continue to the next independent phase. Do not halt the entire run for a single phase failure.
+- **Verification evidence:** "Phase complete" = output file exists AND relevant test/lint passes. File existence alone is not sufficient.
 </Execution_Policy>
 
 <Steps>
@@ -82,18 +85,21 @@ AI agents can only work with what they can see. Without structured documentation
    - Create: `.agent/PLANS.md` — `Read references/exec-plan-template.md` for the standard
 
 4. **Phase 3 — Architecture boundary test**
+   - `Read references/stack-routing.md` for import parser and test file path per stack
    - Scan all source files, parse imports, validate against layer rules
-   - Error format: `VIOLATION: {file} imports {target} — {layer} cannot import {target_layer}. See docs/architecture/LAYERS.md`
+   - Error format: `VIOLATION: {file}:{line} imports {target} — {layer} cannot import {target_layer}. See docs/architecture/LAYERS.md`
    - Ratchet: `KNOWN_VIOLATIONS` list, can only shrink
    - For existing repos: establish baseline first, then ratchet
 
 5. **Phase 4 — Linter boundary enforcement**
-   - Use linter's native import restriction rules (ESLint `no-restricted-imports`, Ruff `banned-api`, Go `depguard`)
+   - `Read references/stack-routing.md` for linter rule name and config location per stack
+   - Use linter's native import restriction rules
    - Every error message MUST include remediation — error output IS agent context
 
 6. **Phase 5 — CI pipeline**
-   - `.github/workflows/ci.yml`: parallel jobs for lint + typecheck + test + build
-   - Adapt to stack — not every stack needs all 4 jobs
+   - `Read references/ci-templates.md` for starter YAML templates
+   - `Read references/stack-routing.md` for CI job matrix per stack
+   - Adapt to stack — not every stack needs all 4 jobs (lint, typecheck, test, build)
 
 7. **Phase 6 — Garbage collection**
    - `Read references/gc-patterns.md` for scan types and migration strategy
@@ -101,16 +107,19 @@ AI agents can only work with what they can see. Without structured documentation
    - Single `gc` command + scheduled GitHub Action (weekly cron)
 
 8. **Phase 7 — Pre-commit hooks** (optional)
-   - JS/TS: husky + lint-staged | Python: pre-commit framework | Go: golangci-lint
+   - `Read references/stack-routing.md` for framework and config per stack
+   - Phase 7 is optional — CI (Phase 5) is the authoritative gate
 </Steps>
 
 <Tool_Usage>
-- Use `Agent(subagent_type="oh-my-claudecode:explore", model="haiku")` for directory mapping in Phase 0
-- Use `Agent(subagent_type="oh-my-claudecode:architect", model="opus")` for architecture analysis in Phase 0c
-- Use `Agent(subagent_type="oh-my-claudecode:writer", model="haiku")` for AGENTS.md + docs generation
-- Use `Agent(subagent_type="oh-my-claudecode:executor", model="sonnet")` for boundary test, linter config, CI, GC scripts
-- Use `Agent(subagent_type="oh-my-claudecode:verifier", model="sonnet")` for final verification
-- Read `references/*.md` files on demand — don't load all at once
+Delegate by intent — platform routes the call. `Read references/tool-routing.md` for platform-specific mappings.
+
+- **Explore** (lightweight model) — directory mapping, file discovery in Phase 0
+- **Architect** (heavyweight model) — architecture analysis, layer identification in Phase 0
+- **Write** (lightweight model) — AGENTS.md + docs generation in Phases 1-2
+- **Execute** (standard model) — boundary test, linter config, CI, GC scripts in Phases 3-7
+- **Verify** (standard model) — final checklist validation
+- Read `references/*.md` files on demand per phase — don't load all at once
 </Tool_Usage>
 
 <Examples>
@@ -124,6 +133,18 @@ Why good: Discovery first, confirms with user, adapts to actual stack.
 User: "add architecture boundaries to this existing Python repo"
 Agent: Runs Phase 0 -> discovers 200+ existing import violations -> establishes KNOWN_VIOLATIONS baseline -> sets lint rules to warn-only -> creates ratchet test -> asks user about convergence timeline.
 Why good: Doesn't break existing build, uses ratchet for gradual convergence.
+</Good>
+
+<Good>
+User: "harness-init 3-4"
+Agent: Runs Phase 0 (always) -> detects Go + golangci-lint -> reads stack-routing.md -> creates boundary test with `go/parser` + depguard config -> skips Phases 1-2, 5-7.
+Why good: Respects phase argument, still runs discovery, uses decision tables for tooling.
+</Good>
+
+<Good>
+User: "harness-init this turborepo monorepo"
+Agent: Runs Phase 0 -> detects packages/ structure -> reads layer-templates.md monorepo model -> maps cross-package dependencies -> creates per-package boundary tests + shared CI matrix.
+Why good: Adapts to monorepo structure instead of forcing single-app patterns.
 </Good>
 
 <Bad>
@@ -144,7 +165,7 @@ Why bad: Didn't establish baseline. Broke the build. Should warn-only first, the
 - **Stop and ask** if no clear directory structure exists (flat repo with no src/ or lib/)
 - **Stop and ask** if existing AGENTS.md or docs/ conflict with harness structure
 - **Stop and report** if linter/test runner cannot be installed (permissions, incompatible versions)
-- **Graceful degradation** if `gh` CLI, LSP, or `.omc/state/` unavailable — skip those dynamic context signals, note what was skipped
+- **Graceful degradation** if `gh` CLI, LSP, or session state unavailable — skip those dynamic context signals, note what was skipped
 - **Never force** a layer structure that doesn't fit the actual codebase
 </Escalation_And_Stop_Conditions>
 
@@ -191,16 +212,7 @@ Detailed templates and guides are in `references/` — read on demand per phase:
 - `references/exec-plan-template.md` — ExecPlan (.agent/PLANS.md) standard
 - `references/golden-principles-guide.md` — How to write golden principles
 - `references/gc-patterns.md` — GC scan types + migration strategy for existing repos
-
-## Methodology Source
-
-OpenAI's 8 principles (for background understanding, not execution):
-1. Engineers become environment designers
-2. Give agents a map, not an encyclopedia
-3. If agents can't see it, it doesn't exist
-4. Enforce architecture mechanically
-5. Boring technology wins
-6. Entropy management is garbage collection
-7. Throughput changes merge philosophy
-8. Agent-to-agent code review
+- `references/tool-routing.md` — Platform-specific tool delegation mappings
+- `references/stack-routing.md` — Stack → tooling decision tables for Phases 3-7
+- `references/ci-templates.md` — Starter CI YAML for GitHub Actions, GitLab, Makefile
 </Advanced>
