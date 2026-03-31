@@ -79,14 +79,22 @@ AI agents can only work with what they can see. Without structured documentation
    - Point to docs/ for details, don't inline them
 
 3. **Phase 2 — docs/ system of record**
+   Required:
    - Create: `ARCHITECTURE.md` at repo root (top-level domain map, ~30 lines, points to LAYERS.md)
    - Create: `docs/architecture/LAYERS.md` (definitive layer hierarchy + remediation guide)
    - Create: `docs/golden-principles/` — `Read references/golden-principles-guide.md` for how to write these
+   - Create: `docs/SECURITY.md` (auth flows, secrets management, threat model)
+   Recommended:
    - Create: `docs/guides/` (setup, testing, deployment — only what's relevant)
    - Create: `docs/exec-plans/` — `Read references/exec-plan-template.md` for the standard (active/ + completed/ subdirs)
-   - Optional: `docs/design-docs/` with `index.md` (ADR index) and `core-beliefs.md` (non-negotiable architectural decisions)
-   - Optional: `docs/references/` (external library docs reformatted for LLM consumption)
-   - Optional: `QUALITY_SCORE.md` at repo root (per-domain quality grades, updated by GC scans)
+   - Create: `docs/design-docs/` with `index.md` (ADR index) and `core-beliefs.md` (non-negotiable decisions)
+   - Create: `docs/references/` (external library docs reformatted for LLM consumption, e.g. `{library}-llms.txt`)
+   - Create: `docs/DESIGN.md`, `docs/PLANS.md`, `docs/QUALITY_SCORE.md`
+   Conditional (by project type):
+   - `docs/RELIABILITY.md` — for services (SLA, error budgets, resilience patterns)
+   - `docs/STACK.md` — stack-specific conventions (replaces OpenAI's FRONTEND.md)
+   - `docs/product-specs/` — for product-driven projects
+   - `docs/generated/` — auto-generated docs (db-schema.md, api-spec.md)
 
 4. **Phase 3 — Architecture boundary test**
    - `Read references/stack-routing.md` for import parser and test file path per stack
@@ -191,21 +199,32 @@ Why bad: Didn't establish baseline. Broke the build. Should warn-only first, the
 
 ```
 project-root/
-├── AGENTS.md                          # ~100 lines, orientation map
-├── ARCHITECTURE.md                    # Top-level domain map
+├── AGENTS.md                          # ~100 lines, orientation map          [Required]
+├── ARCHITECTURE.md                    # Top-level domain map                 [Required]
 ├── docs/
 │   ├── architecture/
-│   │   └── LAYERS.md                  # Definitive layer hierarchy
-│   ├── design-docs/                   # ADRs (optional, larger projects)
-│   │   ├── index.md                   # ADR index
-│   │   └── core-beliefs.md            # Non-negotiable architectural decisions
-│   ├── exec-plans/                    # ExecPlan lifecycle
-│   │   ├── active/                    # In-progress plans
-│   │   └── completed/                 # Finished plans + retrospectives
-│   ├── golden-principles/             # 30-60 lines each, DO/DON'T
-│   ├── guides/                        # Setup, testing, deployment
-│   └── references/                    # External docs reformatted for LLMs (optional)
-├── QUALITY_SCORE.md                   # Per-domain quality grades (optional)
+│   │   └── LAYERS.md                  # Layer hierarchy + enforcement        [Required]
+│   ├── golden-principles/             # DO/DON'T patterns, 30-60 lines each [Required]
+│   ├── SECURITY.md                    # Auth, secrets, threat model          [Required]
+│   ├── guides/                        # Setup, testing, deployment           [Recommended]
+│   ├── exec-plans/                    # ExecPlan lifecycle                   [Recommended]
+│   │   ├── active/
+│   │   ├── completed/
+│   │   └── tech-debt-tracker.md
+│   ├── design-docs/                   # ADRs                                [Recommended]
+│   │   ├── index.md
+│   │   ├── core-beliefs.md
+│   │   └── {NNNN-title}.md
+│   ├── references/                    # External docs for LLMs              [Recommended]
+│   │   └── {library}-llms.txt
+│   ├── DESIGN.md                      # Design philosophy                   [Recommended]
+│   ├── PLANS.md                       # Exec-plans overview                 [Recommended]
+│   ├── QUALITY_SCORE.md               # Per-domain quality grades           [Recommended]
+│   ├── RELIABILITY.md                 # SLA, error budgets (services)       [Conditional]
+│   ├── STACK.md                       # Stack conventions                   [Conditional]
+│   ├── product-specs/                 # Product specs                       [Conditional]
+│   └── generated/                     # Auto-generated docs                 [Conditional]
+│       └── {db-schema,api-spec}.md
 ├── scripts/gc/                        # Garbage collection scripts
 ├── tests/architecture/
 │   └── boundary.test.*                # Mechanical layer enforcement
