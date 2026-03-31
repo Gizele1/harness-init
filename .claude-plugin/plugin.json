@@ -9,6 +9,5 @@
   "repository": "https://github.com/Gizele1/harness-init",
   "license": "MIT",
   "keywords": ["agent", "scaffold", "ci", "boundary-tests", "architecture", "harness-engineering"],
-  "skills": "./skills/",
-  "commands": "./commands/"
+  "skills": "./skills/"
 }
