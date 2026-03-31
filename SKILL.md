@@ -103,10 +103,11 @@ AI agents can only work with what they can see. Without structured documentation
    - `docs/generated/` — auto-generated docs (db-schema.md, api-spec.md)
 
 4. **Phase 3 — Architecture boundary test**
+   - `Read references/boundary-test-template.md` for test skeletons, KNOWN_VIOLATIONS format, and ratchet logic
    - `Read references/stack-routing.md` for import parser and test file path per stack
    - Scan all source files, parse imports, validate against layer rules
    - Error format: `VIOLATION: {file}:{line} imports {target} — {layer} cannot import {target_layer}. See docs/architecture/LAYERS.md`
-   - Ratchet: `KNOWN_VIOLATIONS` list, can only shrink
+   - Ratchet: `KNOWN_VIOLATIONS` stored in `tests/architecture/known-violations.json`, can only shrink
    - For existing repos: establish baseline first, then ratchet
 
 5. **Phase 4 — Linter boundary enforcement**
@@ -250,6 +251,7 @@ Detailed templates and guides are in `references/` — read on demand per phase:
 - `references/golden-principles-guide.md` — How to write golden principles
 - `references/gc-patterns.md` — GC scan types + migration strategy for existing repos
 - `references/security-template.md` — SECURITY.md template with exclusion rules
+- `references/boundary-test-template.md` — Test skeletons, KNOWN_VIOLATIONS format, ratchet logic
 - `references/tool-routing.md` — Platform-specific tool delegation mappings
 - `references/stack-routing.md` — Stack → tooling decision tables for Phases 3-7
 - `references/ci-templates.md` — Starter CI YAML for GitHub Actions, GitLab, Makefile
