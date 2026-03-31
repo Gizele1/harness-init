@@ -8,7 +8,13 @@ triggers:
   - agent-ready
   - architecture boundaries
   - layer enforcement
-argument-hint: "[phase|full]"
+  - init harness
+  - make agent-ready
+  - set up architecture
+argument-hint: "[full|N|N-M]"
+metadata:
+  author: Gizele1
+  version: "1.1.0"
 ---
 
 # Harness Init
