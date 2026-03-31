@@ -16,7 +16,7 @@ argument-hint: "[phase|full]"
 <Purpose>
 Bootstrap a repository with OpenAI's harness engineering scaffolding: AGENTS.md orientation map, docs/ system of record, architectural layer enforcement, golden principles, garbage collection, and static/dynamic context strategy.
 
-This is the **repo initialization subset** of harness engineering. Runtime feedback loops, agent review loops, and observability integration are out of scope.
+This is the **repo initialization subset** of harness engineering. Runtime feedback loops, agent review loops, and observability stack setup are out of scope. If the repo already has observability (logs, metrics, tracing), this skill reads it as dynamic context but does not build it.
 
 Source: OpenAI "Harness engineering: leveraging Codex in an agent-first world" (2026-02-11)
 </Purpose>
@@ -84,9 +84,9 @@ AI agents can only work with what they can see. Without structured documentation
    - Create: `docs/golden-principles/` — `Read references/golden-principles-guide.md` for how to write these
    - Create: `docs/guides/` (setup, testing, deployment — only what's relevant)
    - Create: `docs/exec-plans/` — `Read references/exec-plan-template.md` for the standard (active/ + completed/ subdirs)
-   - Optional: `docs/design-docs/` (ADRs for non-trivial architectural decisions)
+   - Optional: `docs/design-docs/` with `index.md` (ADR index) and `core-beliefs.md` (non-negotiable architectural decisions)
    - Optional: `docs/references/` (external library docs reformatted for LLM consumption)
-   - Optional: `docs/QUALITY_SCORE.md` (per-domain quality grades, updated by GC scans)
+   - Optional: `QUALITY_SCORE.md` at repo root (per-domain quality grades, updated by GC scans)
 
 4. **Phase 3 — Architecture boundary test**
    - `Read references/stack-routing.md` for import parser and test file path per stack
@@ -197,13 +197,15 @@ project-root/
 │   ├── architecture/
 │   │   └── LAYERS.md                  # Definitive layer hierarchy
 │   ├── design-docs/                   # ADRs (optional, larger projects)
+│   │   ├── index.md                   # ADR index
+│   │   └── core-beliefs.md            # Non-negotiable architectural decisions
 │   ├── exec-plans/                    # ExecPlan lifecycle
 │   │   ├── active/                    # In-progress plans
 │   │   └── completed/                 # Finished plans + retrospectives
 │   ├── golden-principles/             # 30-60 lines each, DO/DON'T
 │   ├── guides/                        # Setup, testing, deployment
-│   ├── references/                    # External docs reformatted for LLMs (optional)
-│   └── QUALITY_SCORE.md              # Per-domain quality grades (optional)
+│   └── references/                    # External docs reformatted for LLMs (optional)
+├── QUALITY_SCORE.md                   # Per-domain quality grades (optional)
 ├── scripts/gc/                        # Garbage collection scripts
 ├── tests/architecture/
 │   └── boundary.test.*                # Mechanical layer enforcement
