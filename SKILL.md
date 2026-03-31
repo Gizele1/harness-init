@@ -8,7 +8,13 @@ triggers:
   - agent-ready
   - architecture boundaries
   - layer enforcement
-argument-hint: "[phase|full]"
+  - init harness
+  - make agent-ready
+  - set up architecture
+argument-hint: "[full|N|N-M]"
+metadata:
+  author: Gizele1
+  version: "1.1.0"
 ---
 
 # Harness Init
@@ -83,7 +89,7 @@ AI agents can only work with what they can see. Without structured documentation
    - Create: `ARCHITECTURE.md` at repo root (top-level domain map, ~30 lines, points to LAYERS.md)
    - Create: `docs/architecture/LAYERS.md` (definitive layer hierarchy + remediation guide)
    - Create: `docs/golden-principles/` — `Read references/golden-principles-guide.md` for how to write these
-   - Create: `docs/SECURITY.md` (auth flows, secrets management, threat model)
+   - Create: `docs/SECURITY.md` — `Read references/security-template.md` for template and exclusion rules
    Recommended:
    - Create: `docs/guides/` (setup, testing, deployment — only what's relevant)
    - Create: `docs/exec-plans/` — `Read references/exec-plan-template.md` for the standard (active/ + completed/ subdirs)
@@ -97,10 +103,11 @@ AI agents can only work with what they can see. Without structured documentation
    - `docs/generated/` — auto-generated docs (db-schema.md, api-spec.md)
 
 4. **Phase 3 — Architecture boundary test**
+   - `Read references/boundary-test-template.md` for test skeletons, KNOWN_VIOLATIONS format, and ratchet logic
    - `Read references/stack-routing.md` for import parser and test file path per stack
    - Scan all source files, parse imports, validate against layer rules
    - Error format: `VIOLATION: {file}:{line} imports {target} — {layer} cannot import {target_layer}. See docs/architecture/LAYERS.md`
-   - Ratchet: `KNOWN_VIOLATIONS` list, can only shrink
+   - Ratchet: `KNOWN_VIOLATIONS` stored in `tests/architecture/known-violations.json`, can only shrink
    - For existing repos: establish baseline first, then ratchet
 
 5. **Phase 4 — Linter boundary enforcement**
@@ -109,14 +116,17 @@ AI agents can only work with what they can see. Without structured documentation
    - Every error message MUST include remediation — error output IS agent context
 
 6. **Phase 5 — CI pipeline**
-   - `Read references/ci-templates.md` for starter YAML templates
+   - `Read references/ci-templates.md` for starter YAML templates and command validation rules
    - `Read references/stack-routing.md` for CI job matrix per stack
    - Adapt to stack — not every stack needs all 4 jobs (lint, typecheck, test, build)
+   - Validate discovered commands before embedding in CI — reject shell metacharacters, stop and ask if suspicious
 
 7. **Phase 6 — Garbage collection**
-   - `Read references/gc-patterns.md` for scan types and migration strategy
+   - `Read references/gc-patterns.md` for scan types, safety rules, and migration strategy
+   - `Read references/stack-routing.md` Phase 6 table for per-stack GC tooling
+   - `Read references/ci-templates.md` GC Workflow section for `gc.yml` template
    - Prioritize entropy scans (doc drift, architecture violations) over style scans
-   - Single `gc` command + scheduled GitHub Action (weekly cron)
+   - Single `gc` command + scheduled GitHub Action (weekly cron, report-only)
 
 8. **Phase 7 — Pre-commit hooks** (optional)
    - `Read references/stack-routing.md` for framework and config per stack
@@ -242,6 +252,8 @@ Detailed templates and guides are in `references/` — read on demand per phase:
 - `references/exec-plan-template.md` — ExecPlan (docs/exec-plans/) standard
 - `references/golden-principles-guide.md` — How to write golden principles
 - `references/gc-patterns.md` — GC scan types + migration strategy for existing repos
+- `references/security-template.md` — SECURITY.md template with exclusion rules
+- `references/boundary-test-template.md` — Test skeletons, KNOWN_VIOLATIONS format, ratchet logic
 - `references/tool-routing.md` — Platform-specific tool delegation mappings
 - `references/stack-routing.md` — Stack → tooling decision tables for Phases 3-7
 - `references/ci-templates.md` — Starter CI YAML for GitHub Actions, GitLab, Makefile

@@ -2,6 +2,14 @@
 
 Entropy management — recurring scans that catch drift, not just style violations.
 
+## Safety Rules
+
+- GC scripts MUST be **read-only**: scan and report, never auto-fix or delete
+- Any auto-fix capability MUST require an explicit `--fix` flag and user confirmation
+- Scheduled CI runs (cron) MUST be report-only (exit code + issue creation)
+- GC scripts MUST NOT modify source files, delete files, or alter git history
+- GC workflow permissions: `contents: read`, `issues: write` — nothing more
+
 ## Two Categories
 
 ### Style Scans (basic, noisy)
