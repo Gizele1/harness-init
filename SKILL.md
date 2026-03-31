@@ -58,7 +58,7 @@ AI agents can only work with what they can see. Without structured documentation
 
 <Execution_Policy>
 - Phase 0 (Discovery) is MANDATORY — never skip, never assume the stack
-- **Argument parsing:** `full` = all phases (default). `N` = single phase. `N-M` = phase range. No argument = ask user. Phase 0 always runs regardless of argument.
+- **Argument parsing:** `full` = all phases. `N` = single phase. `N-M` = phase range. No argument = interactive (asks user what to set up). Phase 0 always runs regardless of argument.
 - Read before you write — match existing code style and patterns
 - Use `git mv` for doc restructuring to preserve history
 - New lint rules warn first if pre-existing violations exist — don't break the build
@@ -246,7 +246,7 @@ project-root/
 ## Reference Files
 
 Detailed templates and guides are in `references/` — read on demand per phase:
-- `references/layer-templates.md` — 4 tech stack layer models
+- `references/layer-templates.md` — 5 layer models (4 tech stacks + OpenAI original)
 - `references/agents-md-template.md` — AGENTS.md template
 - `references/context-strategy.md` — Static vs dynamic context tables
 - `references/exec-plan-template.md` — ExecPlan (docs/exec-plans/) standard

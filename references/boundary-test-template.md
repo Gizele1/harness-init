@@ -56,20 +56,25 @@ const LAYER_RULES: Record<string, string[]> = {
   pages: ['components', 'services', 'lib', 'types'],
 };
 
-const IMPORT_RE = /import\s+.*\s+from\s+['"]([^'"]+)['"]/g;
+// Matches `from '...'` on any line — handles single-line and multi-line imports,
+// plus re-exports (`export { x } from '...'`).
+// NOTE: This is a simplified scanner. For full accuracy (dynamic imports, require()),
+// use ts-morph or @babel/parser AST parsing (see references/stack-routing.md).
+const FROM_RE = /\bfrom\s+['"]([^'"]+)['"]/;
 
 function getLayer(filePath: string): string | null {
-  for (const layer of Object.keys(LAYER_RULES)) {
-    if (filePath.startsWith(`src/${layer}/`)) return layer;
-  }
+  // Adapt 'src' to your project's source root
+  const match = filePath.match(/^src\/([^/]+)\//);
+  if (match && match[1] in LAYER_RULES) return match[1];
   return null;
 }
 
 function resolveTargetLayer(importPath: string): string | null {
+  // Strip common path aliases (@/, ~/, #/)
+  const normalized = importPath.replace(/^[@~#]\//, '');
+  const segments = normalized.split('/');
   for (const layer of Object.keys(LAYER_RULES)) {
-    if (importPath.includes(`/${layer}/`) || importPath.startsWith(layer)) {
-      return layer;
-    }
+    if (segments.includes(layer)) return layer;
   }
   return null;
 }
@@ -81,9 +86,15 @@ function scanFile(filePath: string): Array<{ file: string; line: number; imports
   const fromLayer = getLayer(relative(process.cwd(), filePath));
   if (!fromLayer) return violations;
 
+  let inTypeImport = false;
   for (let i = 0; i < lines.length; i++) {
-    const matches = lines[i].matchAll(IMPORT_RE);
-    for (const match of matches) {
+    const line = lines[i];
+
+    // Track type-only imports (erased at compile time, not runtime dependencies)
+    if (/^\s*import\s+type\s/.test(line)) inTypeImport = true;
+
+    const match = line.match(FROM_RE);
+    if (match && !inTypeImport) {
       const targetLayer = resolveTargetLayer(match[1]);
       if (targetLayer && !LAYER_RULES[fromLayer].includes(targetLayer) && targetLayer !== fromLayer) {
         violations.push({
@@ -95,6 +106,9 @@ function scanFile(filePath: string): Array<{ file: string; line: number; imports
         });
       }
     }
+
+    // Reset type-import tracking when the from-clause ends the statement
+    if (inTypeImport && FROM_RE.test(line)) inTypeImport = false;
   }
   return violations;
 }
@@ -114,6 +128,7 @@ function collectFiles(dir: string, ext: string[]): string[] {
 }
 
 describe('Architecture Boundary Test', () => {
+  // Adapt 'src' to your project's source root
   const files = collectFiles('src', ['.ts', '.tsx']);
   const allViolations = files.flatMap(scanFile);
 
@@ -125,15 +140,11 @@ describe('Architecture Boundary Test', () => {
       const msg = newViolations
         .map(v => `VIOLATION: ${v.file}:${v.line} imports ${v.imports} — ${v.from_layer} cannot import ${v.to_layer}. See docs/architecture/LAYERS.md`)
         .join('\n');
-      fail(`New architecture violations found:\n${msg}`);
+      throw new Error(`New architecture violations found:\n${msg}`);
     }
   });
 
-  test('known violations only shrink, never grow (ratchet)', () => {
-    const baselineSet = new Set(knownViolations.map(v => `${v.file}:${v.imports}`));
-    const currentSet = new Set(allViolations.map(v => `${v.file}:${v.imports}`));
-    const added = [...currentSet].filter(v => !baselineSet.has(v));
-    expect(added).toEqual([]);
+  test('violation count only shrinks (ratchet)', () => {
     expect(allViolations.length).toBeLessThanOrEqual(knownViolations.length);
   });
 });
@@ -159,17 +170,20 @@ KNOWN_VIOLATIONS_PATH = Path("tests/architecture/known-violations.json")
 
 
 def get_layer(file_path: Path) -> str | None:
+    # Adapt 'src' to your project's source root (e.g., package name, 'app/')
     parts = file_path.parts
-    for layer in LAYER_RULES:
-        if layer in parts:
-            return layer
+    if len(parts) >= 2 and parts[0] == "src" and parts[1] in LAYER_RULES:
+        return parts[1]
     return None
 
 
 def scan_imports(file_path: Path) -> list[dict]:
     violations = []
     source = file_path.read_text()
-    tree = ast.parse(source)
+    try:
+        tree = ast.parse(source)
+    except SyntaxError:
+        return violations  # Skip unparseable files
     from_layer = get_layer(file_path)
     if not from_layer:
         return violations
@@ -185,6 +199,7 @@ def scan_imports(file_path: Path) -> list[dict]:
                         "from_layer": from_layer,
                         "to_layer": layer,
                     })
+                break  # Only match the first (shallowest) layer
 
     for node in ast.walk(tree):
         if isinstance(node, ast.Import):
@@ -200,6 +215,7 @@ def test_no_new_violations():
     known = json.loads(KNOWN_VIOLATIONS_PATH.read_text()) if KNOWN_VIOLATIONS_PATH.exists() else []
     known_set = {(v["file"], v["imports"]) for v in known}
 
+    # Adapt 'src' to your project's source root (e.g., package name, 'app/')
     all_violations = []
     for py_file in Path("src").rglob("*.py"):
         all_violations.extend(scan_imports(py_file))
@@ -214,20 +230,15 @@ def test_no_new_violations():
 
 def test_ratchet_only_shrinks():
     known = json.loads(KNOWN_VIOLATIONS_PATH.read_text()) if KNOWN_VIOLATIONS_PATH.exists() else []
-    known_set = {(v["file"], v["imports"]) for v in known}
 
+    # Adapt 'src' to your project's source root (e.g., package name, 'app/')
     all_violations = []
     for py_file in Path("src").rglob("*.py"):
         all_violations.extend(scan_imports(py_file))
 
-    current_set = {(v["file"], v["imports"]) for v in all_violations}
-    added = current_set - known_set
-    assert not added, (
-        f"New violations added to baseline: {added}. "
-        "KNOWN_VIOLATIONS can only shrink — fix violations, never add new ones."
-    )
     assert len(all_violations) <= len(known), (
-        f"Violation count increased: {len(all_violations)} > baseline {len(known)}."
+        f"Violation count increased: {len(all_violations)} > baseline {len(known)}. "
+        "Fix violations to reduce the count — never add new ones."
     )
 ```
 

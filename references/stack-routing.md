@@ -23,7 +23,7 @@ Use these tables to select the right tooling for the detected stack. Phase 0 dis
 | Python (Ruff) | ruff | `banned-api` (flake8-tidy-imports) | `pyproject.toml [tool.ruff]` |
 | Python (Flake8) | flake8 | `flake8-import-restrictions` | `.flake8` or `setup.cfg` |
 | Go | golangci-lint | `depguard` | `.golangci.yml` |
-| Rust | clippy | `disallowed_methods` / custom lint | `clippy.toml` |
+| Rust | clippy | `pub(crate)` visibility + workspace deps | `Cargo.toml` + module structure |
 | Java | ArchUnit | `ArchRuleDefinition.noClasses()` | Test file (ArchUnit is test-based) |
 
 **Key rule:** Every linter error MUST include remediation text. Error output IS agent context.
@@ -35,7 +35,7 @@ Use these tables to select the right tooling for the detected stack. Phase 0 dis
 | JS/TS | `eslint .` | `tsc --noEmit` | `jest` / `vitest` | `next build` / `tsc` |
 | Python | `ruff check .` | `mypy .` (if typed) | `pytest` | `python -m build` (if packaged) |
 | Go | `golangci-lint run` | (included in build) | `go test ./...` | `go build ./...` |
-| Rust | `clippy` | (included in build) | `cargo test` | `cargo build --release` |
+| Rust | `cargo clippy` | (included in build) | `cargo test` | `cargo build --release` |
 | Java/Kotlin | `checkstyle` / `ktlint` | (compiled language) | `./gradlew test` | `./gradlew build` |
 
 **Not every stack needs all 4 jobs.** Go and Rust combine typecheck with build. Python may skip build if not a published package. Read `references/ci-templates.md` for starter YAML.
