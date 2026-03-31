@@ -21,6 +21,7 @@
 | Unfinished tasks | Session state directory or project task tracker | Resume from last session |
 | Architecture compliance | Run boundary test (if exists) | New layer violations? |
 | Documentation drift | Compare docs/ timestamps to src/ | Stale documentation? |
+| App observability | Application logs, metrics, tracing (if available) | Runtime errors, performance issues |
 
 ## The Distinction
 
@@ -39,3 +40,4 @@ Not all dynamic signals are always available. Handle missing tools:
 | CI status | No `gh` CLI / not GitHub | Check for CI config, skip |
 | Session state | No `.omc/state/` | Skip, note fresh session |
 | Boundary test | Not yet created | Note: will be created in Phase 3 |
+| App observability | No log/metrics access | Skip, note unavailable |
