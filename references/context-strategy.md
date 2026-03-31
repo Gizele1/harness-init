@@ -8,7 +8,7 @@
 | Layer rules | `docs/architecture/LAYERS.md` | Authoritative dependency hierarchy |
 | Canonical patterns | `docs/golden-principles/*.md` | DO/DON'T, 30-60 lines each |
 | Dev guides | `docs/guides/*.md` | setup, testing, deployment |
-| ExecPlan standard | `.agent/PLANS.md` | Template for complex features |
+| ExecPlan standard | `docs/exec-plans/` or `PLANS.md` | Template for complex features |
 | Constraints | Linter rules + boundary tests | Mechanical enforcement, not markdown |
 
 ## Dynamic Context (probed at each session start)
@@ -21,6 +21,7 @@
 | Unfinished tasks | Session state directory or project task tracker | Resume from last session |
 | Architecture compliance | Run boundary test (if exists) | New layer violations? |
 | Documentation drift | Compare docs/ timestamps to src/ | Stale documentation? |
+| App observability | Application logs, metrics, tracing (if available) | Runtime errors, performance issues |
 
 ## The Distinction
 
@@ -39,3 +40,4 @@ Not all dynamic signals are always available. Handle missing tools:
 | CI status | No `gh` CLI / not GitHub | Check for CI config, skip |
 | Session state | No `.omc/state/` | Skip, note fresh session |
 | Boundary test | Not yet created | Note: will be created in Phase 3 |
+| App observability | No log/metrics access | Skip, note unavailable |

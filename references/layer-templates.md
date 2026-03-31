@@ -56,4 +56,6 @@ The canonical model from the harness engineering article:
 Types → Config → Repo → Service → Runtime → UI
 ```
 
-Each layer may only import from layers to its left. `Providers` handle cross-cutting concerns.
+Each layer may only import from layers to its left.
+
+**Providers** handle cross-cutting concerns (auth, connectors, telemetry, feature flags). Providers are the ONLY mechanism for injecting cross-cutting dependencies — direct imports across domains are disallowed. A Provider wraps an external service or shared capability and exposes it through a clean interface that any layer can consume without violating dependency direction.

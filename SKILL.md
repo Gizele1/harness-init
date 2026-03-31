@@ -79,10 +79,14 @@ AI agents can only work with what they can see. Without structured documentation
    - Point to docs/ for details, don't inline them
 
 3. **Phase 2 — docs/ system of record**
+   - Create: `ARCHITECTURE.md` at repo root (top-level domain map, ~30 lines, points to LAYERS.md)
    - Create: `docs/architecture/LAYERS.md` (definitive layer hierarchy + remediation guide)
    - Create: `docs/golden-principles/` — `Read references/golden-principles-guide.md` for how to write these
    - Create: `docs/guides/` (setup, testing, deployment — only what's relevant)
-   - Create: `.agent/PLANS.md` — `Read references/exec-plan-template.md` for the standard
+   - Create: `docs/exec-plans/` — `Read references/exec-plan-template.md` for the standard (active/ + completed/ subdirs)
+   - Optional: `docs/design-docs/` (ADRs for non-trivial architectural decisions)
+   - Optional: `docs/references/` (external library docs reformatted for LLM consumption)
+   - Optional: `docs/QUALITY_SCORE.md` (per-domain quality grades, updated by GC scans)
 
 4. **Phase 3 — Architecture boundary test**
    - `Read references/stack-routing.md` for import parser and test file path per stack
@@ -188,13 +192,18 @@ Why bad: Didn't establish baseline. Broke the build. Should warn-only first, the
 ```
 project-root/
 ├── AGENTS.md                          # ~100 lines, orientation map
-├── .agent/
-│   └── PLANS.md                       # ExecPlan standard
+├── ARCHITECTURE.md                    # Top-level domain map
 ├── docs/
 │   ├── architecture/
 │   │   └── LAYERS.md                  # Definitive layer hierarchy
+│   ├── design-docs/                   # ADRs (optional, larger projects)
+│   ├── exec-plans/                    # ExecPlan lifecycle
+│   │   ├── active/                    # In-progress plans
+│   │   └── completed/                 # Finished plans + retrospectives
+│   ├── golden-principles/             # 30-60 lines each, DO/DON'T
 │   ├── guides/                        # Setup, testing, deployment
-│   └── golden-principles/             # 30-60 lines each, DO/DON'T
+│   ├── references/                    # External docs reformatted for LLMs (optional)
+│   └── QUALITY_SCORE.md              # Per-domain quality grades (optional)
 ├── scripts/gc/                        # Garbage collection scripts
 ├── tests/architecture/
 │   └── boundary.test.*                # Mechanical layer enforcement
@@ -209,7 +218,7 @@ Detailed templates and guides are in `references/` — read on demand per phase:
 - `references/layer-templates.md` — 4 tech stack layer models
 - `references/agents-md-template.md` — AGENTS.md template
 - `references/context-strategy.md` — Static vs dynamic context tables
-- `references/exec-plan-template.md` — ExecPlan (.agent/PLANS.md) standard
+- `references/exec-plan-template.md` — ExecPlan (docs/exec-plans/) standard
 - `references/golden-principles-guide.md` — How to write golden principles
 - `references/gc-patterns.md` — GC scan types + migration strategy for existing repos
 - `references/tool-routing.md` — Platform-specific tool delegation mappings
