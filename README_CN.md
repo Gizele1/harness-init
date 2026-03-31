@@ -6,7 +6,7 @@
 
 ## 做什么
 
-通过 7 个阶段将仓库转变为 agent-ready 环境：
+通过 8 个阶段将仓库转变为 agent-ready 环境：
 
 | 阶段 | 内容 |
 |------|------|
@@ -69,8 +69,10 @@ curl -fsSL https://raw.githubusercontent.com/Gizele1/harness-init/main/SKILL.md 
 在 Claude Code 中：
 
 ```
-/harness-init          # 完整设置，全部阶段
+/harness-init          # 交互模式 — 询问要设置什么
+/harness-init full     # 完整设置，全部阶段
 /harness-init 2        # 只执行特定阶段
+/harness-init 3-4      # 阶段范围
 ```
 
 或者直接说：

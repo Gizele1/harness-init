@@ -6,7 +6,7 @@ Bootstrap any repository with [OpenAI's harness engineering](https://openai.com/
 
 ## What It Does
 
-Transforms a repository into an agent-ready environment through 7 phases:
+Transforms a repository into an agent-ready environment through 8 phases:
 
 | Phase | What |
 |-------|------|
@@ -72,8 +72,10 @@ Just read `SKILL.md` and follow the phases manually in any AI coding assistant.
 In Claude Code:
 
 ```
-/harness-init          # Full setup, all phases
+/harness-init          # Interactive — asks what to set up
+/harness-init full     # Full setup, all phases
 /harness-init 2        # Specific phase only
+/harness-init 3-4      # Phase range
 ```
 
 Or simply say:
