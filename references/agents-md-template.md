@@ -39,19 +39,26 @@ Dependency flows **downward only**. Never import upward.
 ## Documentation Map
 
 ```
+ARCHITECTURE.md                       Top-level domain map (root)
 docs/
-├── architecture/         Layer rules, dependency graph
-├── guides/               Setup, testing, deployment how-tos
-└── golden-principles/    Canonical patterns (DO/DON'T examples)
+├── architecture/                     Layer rules, dependency graph
+├── golden-principles/                Canonical patterns (DO/DON'T examples)
+├── SECURITY.md                       Auth, secrets, threat model
+├── guides/                           Setup, testing, deployment how-tos
+├── exec-plans/                       Feature implementation plans
+├── design-docs/                      Architecture decision records
+└── references/                       External library docs (LLM-friendly)
 ```
 
 ## Where to Look First
 
-| Task              | Start here           |
-|-------------------|---------------------|
-| {common task 1}   | {directory/file}     |
-| {common task 2}   | {directory/file}     |
-| {common task 3}   | {directory/file}     |
+| Task              | Start here                    |
+|-------------------|-------------------------------|
+| Architecture overview | ARCHITECTURE.md (root)    |
+| Layer rules       | docs/architecture/LAYERS.md   |
+| {common task 1}   | {directory/file}              |
+| {common task 2}   | {directory/file}              |
+| {common task 3}   | {directory/file}              |
 
 ## Constraints (Machine-Readable)
 

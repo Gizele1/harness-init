@@ -15,6 +15,10 @@ Use generic descriptions: "Database credentials are loaded from environment vari
 
 ## Template
 
+<!-- AGENT INSTRUCTION: The exclusion rules above apply to ALL sections below.
+     Never include specific environment variable names, credential file paths,
+     internal hostnames/IPs, or unpatched vulnerability details anywhere. -->
+
 ~~~markdown
 # Security
 

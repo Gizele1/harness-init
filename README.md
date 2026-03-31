@@ -12,7 +12,7 @@ Transforms a repository into an agent-ready environment through 8 phases:
 |-------|------|
 | 0. Discovery | Detect stack, map architecture, identify layers, inject dynamic context |
 | 1. AGENTS.md | ~100-line orientation map (index, not encyclopedia) |
-| 2. docs/ | System of record: `architecture/LAYERS.md` + `golden-principles/` + `guides/` |
+| 2. docs/ | System of record: `architecture/LAYERS.md` + `golden-principles/` + `SECURITY.md` + `guides/` |
 | 3. Testing | Architecture boundary test with ratchet mechanism |
 | 4. Linting | Import restriction rules with remediation in error messages |
 | 5. CI | Parallel lint + typecheck + test + build pipeline |
@@ -21,14 +21,14 @@ Transforms a repository into an agent-ready environment through 8 phases:
 
 ## Core Principles (from OpenAI)
 
-1. Engineers become environment designers
-2. Give agents a map, not an encyclopedia
-3. If agents can't see it, it doesn't exist
-4. Enforce architecture mechanically, not via markdown
-5. Boring technology wins
-6. Entropy management is garbage collection
-7. Throughput changes merge philosophy
-8. Agent-to-agent code review
+1. Engineers become environment designers — define constraints, not implementations
+2. Give agents a map, not an encyclopedia — AGENTS.md ~100 lines, progressive disclosure
+3. If agents can't see it, it doesn't exist — all knowledge machine-readable in repo
+4. Enforce architecture mechanically, not via markdown — linters and tests, not prose
+5. Boring technology wins — composable, stable, well-trained-on APIs
+6. Entropy management is garbage collection — periodic scans catch drift
+7. Throughput changes merge philosophy — minimal blocking gates
+8. Agent-to-agent code review — humans intervene only for judgment calls
 
 ## Installation
 
@@ -111,6 +111,7 @@ project-root/
 │   │   ├── core-beliefs.md
 │   │   └── {NNNN-title}.md
 │   ├── references/                    # External docs for LLMs              [Recommended]
+│   │   └── {library}-llms.txt
 │   ├── DESIGN.md                      # Design philosophy                   [Recommended]
 │   ├── PLANS.md                       # Exec-plans overview                 [Recommended]
 │   ├── QUALITY_SCORE.md               # Per-domain quality grades           [Recommended]
@@ -118,6 +119,7 @@ project-root/
 │   ├── STACK.md                       # Stack conventions                   [Conditional]
 │   ├── product-specs/                 # Product specs                       [Conditional]
 │   └── generated/                     # Auto-generated docs                 [Conditional]
+│       └── {db-schema,api-spec}.md
 ├── scripts/gc/                        # Garbage collection scripts
 ├── tests/architecture/
 │   └── boundary.test.*                # Mechanical layer enforcement

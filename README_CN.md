@@ -12,7 +12,7 @@
 |------|------|
 | 0. Discovery | 检测技术栈、映射架构、识别分层、注入动态上下文 |
 | 1. AGENTS.md | ~100 行导向地图（索引，不是百科全书） |
-| 2. docs/ | 单一事实来源：`architecture/LAYERS.md` + `golden-principles/` + `guides/` |
+| 2. docs/ | 单一事实来源：`architecture/LAYERS.md` + `golden-principles/` + `SECURITY.md` + `guides/` |
 | 3. Testing | 架构边界测试 + 棘轮机制（KNOWN_VIOLATIONS 只能缩减） |
 | 4. Linting | 导入限制规则（错误信息内含修复指令） |
 | 5. CI | 并行 lint + typecheck + test + build 流水线 |
@@ -111,6 +111,7 @@ project-root/
 │   │   ├── core-beliefs.md
 │   │   └── {NNNN-title}.md
 │   ├── references/                    # 外部文档（LLM 友好格式）             [推荐]
+│   │   └── {library}-llms.txt
 │   ├── DESIGN.md                      # 设计哲学                             [推荐]
 │   ├── PLANS.md                       # 执行计划概览                          [推荐]
 │   ├── QUALITY_SCORE.md               # 各域质量评分                          [推荐]
@@ -118,6 +119,7 @@ project-root/
 │   ├── STACK.md                       # 技术栈约定                            [条件]
 │   ├── product-specs/                 # 产品规格                              [条件]
 │   └── generated/                     # 自动生成文档                          [条件]
+│       └── {db-schema,api-spec}.md
 ├── scripts/gc/                        # 垃圾回收脚本
 ├── tests/architecture/
 │   └── boundary.test.*                # 机械性层级强制
@@ -171,6 +173,8 @@ project-root/
 | 无安全文档 | docs/SECURITY.md 作为必须项 | 安全上下文对 agent 安全是不可选的 |
 
 ## 上下文策略：静态 vs 动态
+
+本 skill 区分两种类型的上下文：
 
 **静态上下文**（写在 repo 里，随时可读）：
 - `AGENTS.md` — agent 入口索引，~100 行
