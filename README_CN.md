@@ -6,7 +6,7 @@
 
 ## 做什么
 
-通过 7 个阶段将仓库转变为 agent-ready 环境：
+通过 8 个阶段将仓库转变为 agent-ready 环境：
 
 | 阶段 | 内容 |
 |------|------|
@@ -35,30 +35,39 @@
 ### Claude Code（配合 oh-my-claudecode）
 
 ```bash
-mkdir -p ~/.claude/skills/omc-learned/harness-init
-curl -fsSL https://raw.githubusercontent.com/Gizele1/harness-init/main/SKILL.md \
-  -o ~/.claude/skills/omc-learned/harness-init/SKILL.md
+# 克隆并复制到用户级 skills（跨所有项目可用）
+rm -rf /tmp/harness-init 2>/dev/null; git clone --depth 1 https://github.com/Gizele1/harness-init.git /tmp/harness-init
+mkdir -p ~/.claude/skills/omc-learned/harness-init/references
+cp /tmp/harness-init/SKILL.md ~/.claude/skills/omc-learned/harness-init/
+cp /tmp/harness-init/references/*.md ~/.claude/skills/omc-learned/harness-init/references/
+rm -rf /tmp/harness-init
 ```
 
 ### Claude Code（原生）
 
 ```bash
-mkdir -p .claude/skills/harness-init
-curl -fsSL https://raw.githubusercontent.com/Gizele1/harness-init/main/SKILL.md \
-  -o .claude/skills/harness-init/SKILL.md
+# 克隆并复制到项目级 skills
+rm -rf /tmp/harness-init 2>/dev/null; git clone --depth 1 https://github.com/Gizele1/harness-init.git /tmp/harness-init
+mkdir -p .claude/skills/harness-init/references
+cp /tmp/harness-init/SKILL.md .claude/skills/harness-init/
+cp /tmp/harness-init/references/*.md .claude/skills/harness-init/references/
+rm -rf /tmp/harness-init
 ```
 
 ### OpenAI Codex
 
 ```bash
-mkdir -p .agents/skills/harness-init
-curl -fsSL https://raw.githubusercontent.com/Gizele1/harness-init/main/SKILL.md \
-  -o .agents/skills/harness-init/SKILL.md
+# 克隆并复制到 Codex skills 目录
+rm -rf /tmp/harness-init 2>/dev/null; git clone --depth 1 https://github.com/Gizele1/harness-init.git /tmp/harness-init
+mkdir -p .agents/skills/harness-init/references
+cp /tmp/harness-init/SKILL.md .agents/skills/harness-init/
+cp /tmp/harness-init/references/*.md .agents/skills/harness-init/references/
+rm -rf /tmp/harness-init
 ```
 
 ### Cursor
 
-将 `SKILL.md` 内容复制到 `.cursor/rules/harness-init.md` 或 `.cursorrules` 文件中。
+将 `SKILL.md` 和 `references/` 目录复制到 `.cursor/rules/harness-init/` 目录中，或将参考内容内联到 `.cursorrules` 文件。
 
 ### 手动使用
 
@@ -69,8 +78,10 @@ curl -fsSL https://raw.githubusercontent.com/Gizele1/harness-init/main/SKILL.md 
 在 Claude Code 中：
 
 ```
-/harness-init          # 完整设置，全部阶段
+/harness-init          # 交互模式 — 询问要设置什么
+/harness-init full     # 完整设置，全部阶段
 /harness-init 2        # 只执行特定阶段
+/harness-init 3-4      # 阶段范围
 ```
 
 或者直接说：

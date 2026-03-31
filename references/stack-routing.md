@@ -40,6 +40,18 @@ Use these tables to select the right tooling for the detected stack. Phase 0 dis
 
 **Not every stack needs all 4 jobs.** Go and Rust combine typecheck with build. Python may skip build if not a published package. Read `references/ci-templates.md` for starter YAML.
 
+## Phase 6: Garbage Collection Tooling
+
+| Stack | Import Scanner | Doc Drift Check | GC Runner | Config |
+|-------|---------------|-----------------|-----------|--------|
+| JS/TS | `ts-morph` or regex on `import` statements | Compare `docs/` mtime vs `src/` via `git log` | `npm run gc` or `npx tsx scripts/gc/run.ts` | `package.json` scripts |
+| Python | stdlib `ast` module | Compare `docs/` mtime vs `src/` via `git log` | `python scripts/gc/run_all.py` or `make gc` | `pyproject.toml` or Makefile |
+| Go | `go/parser` stdlib | Compare `docs/` mtime vs source via `git log` | `go run scripts/gc/main.go` or `make gc` | Makefile |
+| Rust | regex on `use`/`mod` statements | Compare `docs/` mtime vs `src/` via `git log` | `cargo run --bin gc` or `make gc` | `Cargo.toml` [[bin]] or Makefile |
+| Java/Kotlin | regex on `import` statements | Compare `docs/` mtime vs `src/` via `git log` | `./gradlew gc` or `make gc` | `build.gradle` custom task or Makefile |
+
+**Minimum viable GC:** architecture violation scan + doc-code drift check. Additional scans (file size, TODO count, unused imports) are optional enhancements.
+
 ## Phase 7: Pre-commit Framework
 
 | Stack | Framework | Config File | Key Hooks |
