@@ -1,10 +1,12 @@
 # ExecPlan Standard (docs/exec-plans/)
 
-Source: OpenAI Cookbook — "Using PLANS.md for multi-hour problem solving"
+Two complementary sources:
+- **OpenAI Harness article** — `docs/exec-plans/` directory with lifecycle (active → completed)
+- **OpenAI Cookbook PLANS.md** — single-file ExecPlan format (self-contained living document)
 
 For complex features or significant refactors. Not needed for small changes.
 
-## Directory Structure
+## Directory Structure (from Harness article)
 
 ```
 docs/exec-plans/
@@ -16,6 +18,10 @@ docs/exec-plans/
 ```
 
 Active plans move to `completed/` when done. Downstream agents can reason about prior decisions without human context.
+
+## Single-File Alternative
+
+For simpler projects, a single `PLANS.md` at repo root or `.agent/PLANS.md` works. The directory structure is preferred for repos with multiple concurrent features.
 
 ## Core Requirements
 

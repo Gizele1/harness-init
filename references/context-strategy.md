@@ -8,7 +8,7 @@
 | Layer rules | `docs/architecture/LAYERS.md` | Authoritative dependency hierarchy |
 | Canonical patterns | `docs/golden-principles/*.md` | DO/DON'T, 30-60 lines each |
 | Dev guides | `docs/guides/*.md` | setup, testing, deployment |
-| ExecPlan standard | `.agent/PLANS.md` | Template for complex features |
+| ExecPlan standard | `docs/exec-plans/` or `PLANS.md` | Template for complex features |
 | Constraints | Linter rules + boundary tests | Mechanical enforcement, not markdown |
 
 ## Dynamic Context (probed at each session start)
