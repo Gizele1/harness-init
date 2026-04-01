@@ -3,7 +3,7 @@
 # Run: bash scripts/check-docs.sh
 # Exit code: 0 = pass, 1 = failures found
 
-set -euo pipefail
+set -uo pipefail
 
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 ERRORS=0
