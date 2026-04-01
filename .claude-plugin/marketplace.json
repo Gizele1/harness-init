@@ -1,0 +1,21 @@
+{
+  "name": "harness-init",
+  "owner": {
+    "name": "Gizele1",
+    "url": "https://github.com/Gizele1/harness-init"
+  },
+  "plugins": [
+    {
+      "name": "harness-init",
+      "description": "Makes a repo agent-ready: AGENTS.md, boundary tests, CI pipeline, GC scripts — based on OpenAI's harness engineering methodology",
+      "version": "1.1.0",
+      "author": {
+        "name": "Gizele1"
+      },
+      "source": "./",
+      "category": "productivity",
+      "homepage": "https://github.com/Gizele1/harness-init",
+      "tags": ["agent", "scaffold", "ci", "boundary-tests", "architecture", "harness-engineering"]
+    }
+  ]
+}
