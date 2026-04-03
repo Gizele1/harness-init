@@ -1,0 +1,53 @@
+name: Garbage Collection
+on:
+  schedule:
+    - cron: '0 9 * * 1'  # Monday 9am UTC
+  workflow_dispatch:       # Allow manual trigger
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  gc:
+    name: Weekly Entropy Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Run consistency checks
+        run: bash scripts/gc/check-consistency.sh
+      - name: Create issue on failure
+        if: failure()
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const labelName = 'garbage-collection';
+
+            // Ensure the label exists
+            try {
+              await github.rest.issues.getLabel({ owner, repo, name: labelName });
+            } catch (e) {
+              if (e.status === 404) {
+                await github.rest.issues.createLabel({ owner, repo, name: labelName, color: 'e3dced', description: 'Weekly GC scan issues' });
+              } else {
+                throw e;
+              }
+            }
+
+            const title = `GC scan found issues — ${new Date().toISOString().slice(0, 10)}`;
+            const { data: existing } = await github.rest.issues.listForRepo({
+              owner, repo,
+              labels: labelName,
+              state: 'open',
+            });
+            if (existing.some(i => i.title === title)) {
+              return;
+            }
+            await github.rest.issues.create({
+              owner, repo,
+              title,
+              labels: [labelName],
+              body: 'Weekly GC scan detected entropy. Run `bash scripts/gc/check-consistency.sh` locally for details.'
+            });

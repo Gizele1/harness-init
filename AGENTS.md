@@ -6,6 +6,14 @@
 
 A Claude Code plugin that scaffolds agent-ready repos using OpenAI's harness engineering methodology. It produces `AGENTS.md`, `docs/`, boundary tests, linter rules, CI pipelines, and GC scripts for target repos through 8 phases (Phase 0-7).
 
+## Stack
+
+| Layer     | Tech              |
+|-----------|-------------------|
+| Language  | Markdown + JSON   |
+| Platform  | Claude Code Plugin|
+| License   | MIT               |
+
 ## Directory structure
 
 ```
@@ -19,6 +27,14 @@ A Claude Code plugin that scaffolds agent-ready repos using OpenAI's harness eng
 ├── .claude-plugin/
 │   ├── marketplace.json               # Marketplace registration (required for plugin install)
 │   └── plugin.json                    # Plugin metadata (name, version, skills path)
+├── docs/
+│   ├── architecture/
+│   │   └── LAYERS.md                  # Layer rules, dependency constraints
+│   ├── golden-principles/
+│   │   ├── SKILL_AUTHORING.md         # Skill file DO/DON'T patterns
+│   │   ├── DOCUMENTATION.md           # Doc consistency patterns
+│   │   └── REFERENCES.md              # Reference template patterns
+│   └── SECURITY.md                    # Secrets, exclusion rules
 ├── skills/
 │   └── harness-init/
 │       ├── SKILL.md                   # The skill itself — 8-phase execution logic
@@ -35,9 +51,12 @@ A Claude Code plugin that scaffolds agent-ready repos using OpenAI's harness eng
 │           ├── stack-routing.md
 │           └── tool-routing.md
 ├── scripts/
-│   └── check-docs.sh                 # Doc consistency checker (CI + local)
+│   ├── check-docs.sh                 # Doc consistency checker (CI + local)
+│   └── gc/
+│       └── check-consistency.sh       # GC consistency checker (CI + local)
 └── .github/workflows/
-    └── ci.yml                         # Plugin validation + doc consistency
+    ├── ci.yml                         # Plugin validation + doc consistency
+    └── gc.yml                         # Weekly entropy scan
 ```
 
 ## Key constraints
@@ -46,6 +65,7 @@ A Claude Code plugin that scaffolds agent-ready repos using OpenAI's harness eng
 2. **Reference files are loaded on-demand** — SKILL.md contains `Read references/*.md` directives. Every reference file must exist, and every `Read` directive must point to a real file.
 3. **Version must be consistent** — `plugin.json`, `marketplace.json`, and `SKILL.md` frontmatter all declare version. Keep them in sync.
 4. **SKILL.md is the source of truth** — README describes what the skill does; SKILL.md defines how it works. If they conflict, fix README.
+5. **References must be independent** — no cross-references between reference files (exceptions: `stack-routing.md`, `ci-templates.md`).
 
 ## How to modify
 
@@ -57,9 +77,23 @@ A Claude Code plugin that scaffolds agent-ready repos using OpenAI's harness eng
 ## How to test
 
 ```bash
-claude plugin validate .          # Validate plugin structure
-bash scripts/check-docs.sh        # Check doc consistency
+claude plugin validate .              # Validate plugin structure
+bash scripts/check-docs.sh            # Check doc consistency
+bash scripts/gc/check-consistency.sh  # Run GC consistency checks
 ```
+
+## Where to Look First
+
+| Task                        | Start here                              |
+|-----------------------------|-----------------------------------------|
+| Understand the project      | README.md or README_CN.md               |
+| Architecture overview       | ARCHITECTURE.md (root)                  |
+| Layer rules                 | docs/architecture/LAYERS.md             |
+| Modify the skill            | skills/harness-init/SKILL.md            |
+| Add/edit a reference        | skills/harness-init/references/         |
+| Plugin config               | .claude-plugin/plugin.json              |
+| Install instructions        | INSTALL.md                              |
+| DO/DON'T patterns           | docs/golden-principles/                 |
 
 ## See also
 

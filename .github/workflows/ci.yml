@@ -1,5 +1,4 @@
 name: CI
-
 on:
   push:
     branches: [main]
@@ -9,32 +8,42 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   validate-json:
-    name: Validate JSON files
+    name: Validate JSON
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - name: Validate plugin.json
-        run: |
-          python3 -c "import json; json.load(open('.claude-plugin/plugin.json')); print('plugin.json: valid')"
+        run: python3 -m json.tool .claude-plugin/plugin.json > /dev/null
       - name: Validate marketplace.json
-        run: |
-          python3 -c "import json; json.load(open('.claude-plugin/marketplace.json')); print('marketplace.json: valid')"
+        run: python3 -m json.tool .claude-plugin/marketplace.json > /dev/null
 
   check-docs:
     name: Doc consistency check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - name: Run consistency checks
         run: bash scripts/check-docs.sh
+
+  consistency-check:
+    name: GC Consistency
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Run GC consistency checks
+        run: bash scripts/gc/check-consistency.sh
 
   check-required-files:
     name: Required files exist
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - name: Check required files
         run: |
           MISSING=0
