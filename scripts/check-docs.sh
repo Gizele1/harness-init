@@ -17,10 +17,9 @@ pass() {
   echo "OK:   $1"
 }
 
-# Pre-flight: check for python3
+# Pre-flight: warn if python3 is missing (version and JSON checks will degrade gracefully)
 if ! command -v python3 &>/dev/null; then
-  echo "ERROR: python3 is required but not found in PATH"
-  exit 1
+  echo "WARN: python3 not found in PATH — version and JSON checks will be skipped"
 fi
 
 echo "=== harness-init doc consistency check ==="
