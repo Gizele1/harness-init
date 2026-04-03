@@ -17,6 +17,11 @@ pass() {
   echo "OK:   $1"
 }
 
+# Pre-flight: warn if python3 is missing (version and JSON checks will degrade gracefully)
+if ! command -v python3 &>/dev/null; then
+  echo "WARN: python3 not found in PATH — version and JSON checks will be skipped"
+fi
+
 echo "=== harness-init doc consistency check ==="
 echo ""
 
@@ -39,8 +44,8 @@ SKILL="$REPO_ROOT/skills/harness-init/SKILL.md"
 REF_DIR="$REPO_ROOT/skills/harness-init/references"
 
 if [ -f "$SKILL" ]; then
-  # Extract Read references/*.md directives from SKILL.md
-  REFERENCED=$(grep -oP 'Read references/\K[a-z0-9-]+\.md' "$SKILL" | sort -u)
+  # Extract Read references/*.md directives from SKILL.md (POSIX-compatible)
+  REFERENCED=$(sed -n 's/.*Read references\/\([a-z0-9-]*\.md\).*/\1/p' "$SKILL" | sort -u)
   for ref in $REFERENCED; do
     if [ -f "$REF_DIR/$ref" ]; then
       pass "references/$ref exists (referenced by SKILL.md)"
@@ -63,7 +68,8 @@ echo ""
 echo "--- Version consistency ---"
 PLUGIN_VER=$(python3 -c "import json; print(json.load(open('$REPO_ROOT/.claude-plugin/plugin.json'))['version'])" 2>/dev/null || echo "PARSE_ERROR")
 MARKET_VER=$(python3 -c "import json; print(json.load(open('$REPO_ROOT/.claude-plugin/marketplace.json'))['plugins'][0]['version'])" 2>/dev/null || echo "PARSE_ERROR")
-SKILL_VER=$(grep -oP 'version:\s*"?\K[0-9]+\.[0-9]+\.[0-9]+' "$SKILL" 2>/dev/null | head -1 || echo "PARSE_ERROR")
+SKILL_VER=$(sed -n 's/.*version:[[:space:]]*"*\([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\).*/\1/p' "$SKILL" 2>/dev/null | head -1)
+SKILL_VER=${SKILL_VER:-PARSE_ERROR}
 
 if [ "$PLUGIN_VER" = "$MARKET_VER" ] && [ "$PLUGIN_VER" = "$SKILL_VER" ]; then
   pass "Version consistent across plugin.json, marketplace.json, SKILL.md ($PLUGIN_VER)"
@@ -108,7 +114,8 @@ echo ""
 # 6. Reference file count
 echo "--- Reference file count ---"
 REF_COUNT=$(find "$REF_DIR" -name '*.md' -type f 2>/dev/null | wc -l)
-INSTALL_CLAIMS=$(grep -oP 'Expected:\s*\K[0-9]+' "$REPO_ROOT/INSTALL.md" 2>/dev/null | head -1 || echo "?")
+INSTALL_CLAIMS=$(sed -n 's/.*Expected:[[:space:]]*\([0-9][0-9]*\).*/\1/p' "$REPO_ROOT/INSTALL.md" 2>/dev/null | head -1)
+INSTALL_CLAIMS=${INSTALL_CLAIMS:-?}
 
 if [ "$REF_COUNT" -ge 11 ]; then
   pass "$REF_COUNT reference files found"

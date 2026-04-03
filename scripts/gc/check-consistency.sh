@@ -30,7 +30,7 @@ echo ""
 echo "Check 1: SKILL.md reference paths"
 if [ -f "$SKILL_FILE" ]; then
   # Extract all `Read references/...` or `references/...md` paths from SKILL.md
-  refs=$(grep -oP 'references/[a-zA-Z0-9_-]+\.md' "$SKILL_FILE" | sort -u || true)
+  refs=$(sed -n 's/.*\(references\/[a-zA-Z0-9_-]*\.md\).*/\1/p' "$SKILL_FILE" | sort -u || true)
   check1_errors=0
   if [ -n "$refs" ]; then
     for ref in $refs; do
@@ -105,8 +105,8 @@ echo ""
 echo "Check 4: README phase count consistency"
 if [ -f "$README" ] && [ -f "$README_CN" ]; then
   # Count phase rows in the phase table (lines starting with | N.)
-  en_phases=$(grep -cP '^\|\s*\d+\.' "$README" || echo 0)
-  cn_phases=$(grep -cP '^\|\s*\d+\.' "$README_CN" || echo 0)
+  en_phases=$(grep -c '^|[[:space:]]*[0-9]' "$README" || echo 0)
+  cn_phases=$(grep -c '^|[[:space:]]*[0-9]' "$README_CN" || echo 0)
   if [ "$en_phases" -eq "$cn_phases" ] && [ "$en_phases" -gt 0 ]; then
     echo "  OK: Both READMEs have $en_phases phases"
   elif [ "$en_phases" -eq 0 ] && [ "$cn_phases" -eq 0 ]; then
@@ -133,7 +133,7 @@ if [ -d "$REFS_DIR" ]; then
   for ref_file in "$REFS_DIR"/*.md; do
     basename=$(basename "$ref_file")
     # Check if this file references other files in the same directory
-    other_refs=$(grep -oP 'references/[a-zA-Z0-9_-]+\.md' "$ref_file" 2>/dev/null || true)
+    other_refs=$(sed -n 's/.*\(references\/[a-zA-Z0-9_-]*\.md\).*/\1/p' "$ref_file" 2>/dev/null || true)
     if [ -n "$other_refs" ]; then
       for other in $other_refs; do
         other_name=$(basename "$other")
